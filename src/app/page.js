@@ -182,8 +182,23 @@ export default function Home() {
             }
 
             let resultText = responseData.candidates[0].content.parts[0].text;
-            resultText = resultText.replace(/^```json\n?/g, '').replace(/```$/g, '').trim();
-            const auditResult = JSON.parse(resultText);
+            
+            // Safely extract just the JSON object
+            const firstBrace = resultText.indexOf('{');
+            const lastBrace = resultText.lastIndexOf('}');
+            if (firstBrace !== -1 && lastBrace !== -1) {
+                resultText = resultText.substring(firstBrace, lastBrace + 1);
+            }
+
+            let auditResult;
+            try {
+                auditResult = JSON.parse(resultText);
+            } catch (parseError) {
+                console.warn("Strict JSON parse failed, cleaning up string...", parseError);
+                // If AI hallucinated literal newlines inside strings, replacing them with spaces fixes it
+                const safeText = resultText.replace(/[\n\r\t]+/g, ' ');
+                auditResult = JSON.parse(safeText);
+            }
 
             setProjectData(prev => {
                 const newData = { ...prev, auditResult };
