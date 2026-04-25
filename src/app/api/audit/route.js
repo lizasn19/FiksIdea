@@ -19,7 +19,6 @@ export async function POST(request) {
                 parts: [{ text: "SYSTEM INSTRUCTION:\n" + systemPrompt + "\n\nUSER INPUT:\n" + userPrompt }]
             }],
             generationConfig: { 
-                response_mime_type: "application/json",
                 temperature: 0.7,
                 maxOutputTokens: 4000
             }
