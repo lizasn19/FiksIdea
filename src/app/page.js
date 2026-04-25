@@ -194,10 +194,20 @@ export default function Home() {
             try {
                 auditResult = JSON.parse(resultText);
             } catch (parseError) {
-                console.warn("Strict JSON parse failed, cleaning up string...", parseError);
-                // If AI hallucinated literal newlines inside strings, replacing them with spaces fixes it
-                const safeText = resultText.replace(/[\n\r\t]+/g, ' ');
-                auditResult = JSON.parse(safeText);
+                console.warn("Strict JSON parse failed, cleaning up string...");
+                try {
+                    // If AI hallucinated literal newlines inside strings, replacing them with spaces fixes it
+                    let safeText = resultText.replace(/[\n\r\t]+/g, ' ');
+                    
+                    // Simple fix for truncation (add missing closing brackets if it got cut off)
+                    if ((safeText.match(/"/g) || []).length % 2 !== 0) safeText += '"';
+                    if (!safeText.endsWith('}')) safeText += '}}}}';
+                    
+                    auditResult = JSON.parse(safeText);
+                } catch (fallbackError) {
+                    console.error("RAW AI OUTPUT THAT FAILED TO PARSE:", resultText);
+                    throw new Error("AI Mentor memberikan respon yang terpotong atau formatnya tidak valid. Silakan klik tombol 'LAKUKAN AUDIT FINAL' sekali lagi.");
+                }
             }
 
             setProjectData(prev => {
