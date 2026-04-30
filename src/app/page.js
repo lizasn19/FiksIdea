@@ -71,7 +71,8 @@ export default function Home() {
         bmc: { cp: "", ca: "", vp: "", cr: "", cs: "", kr: "", ch: "", cost: "", rev: "" },
         swot: { s: "", w: "", o: "", t: "" },
         hpp: { items: [{ name: "", cost: 0 }], sellingPrice: 0 },
-        auditResult: null
+        auditResult: null,
+        lastAuditedData: null // New field to track last audit
     });
 
     useEffect(() => {
@@ -160,6 +161,24 @@ export default function Home() {
     };
 
     const performAudit = async () => {
+        // Create a snapshot of current relevant data to compare
+        const currentDataSnapshot = JSON.stringify({
+            category: projectData.category,
+            projectName: projectData.projectName,
+            reText: projectData.reText,
+            bmc: projectData.bmc,
+            swot: projectData.swot,
+            hpp: projectData.hpp
+        });
+
+        // If data hasn't changed, don't call API again
+        if (projectData.lastAuditedData === currentDataSnapshot && projectData.auditResult) {
+            console.log("Data unchanged, skipping API call...");
+            setCurrentStep(5);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+
         setLoading(true);
         try {
             const prompt = `Review PADAT & TAJAM. Data:
@@ -211,7 +230,11 @@ export default function Home() {
             }
 
             setProjectData(prev => {
-                const newData = { ...prev, auditResult };
+                const newData = { 
+                    ...prev, 
+                    auditResult, 
+                    lastAuditedData: currentDataSnapshot // Save snapshot
+                };
                 saveToLocal(newData);
                 return newData;
             });

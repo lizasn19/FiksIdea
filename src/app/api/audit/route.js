@@ -1,3 +1,6 @@
+const CACHE = new Map();
+const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
 export async function POST(request) {
     try {
         const body = await request.json();
@@ -10,8 +13,20 @@ export async function POST(request) {
             });
         }
 
+        // Caching logic
+        const cacheKey = Buffer.from(systemPrompt + userPrompt).toString('base64');
+        const cached = CACHE.get(cacheKey);
+        if (cached && (Date.now() - cached.timestamp < CACHE_TTL)) {
+            console.log("Serving from cache...");
+            return new Response(JSON.stringify(cached.data), {
+                status: 200,
+                headers: { 'Content-Type': 'application/json', 'X-Cache': 'HIT' }
+            });
+        }
+
         const apiKey = process.env.GEMINI_API_KEY;
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        // Upgraded to gemini-1.5-pro for better analysis quality (User is on Pro Plan)
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
 
         const payload = {
             contents: [{
@@ -20,7 +35,7 @@ export async function POST(request) {
             }],
             generationConfig: { 
                 temperature: 0.7,
-                maxOutputTokens: 8192,
+                maxOutputTokens: 4096, // Optimized for response length
                 responseMimeType: "application/json"
             }
         };
@@ -34,15 +49,28 @@ export async function POST(request) {
         const data = await response.json();
 
         if (data.error) {
+            // Check for rate limit specifically
+            if (data.error.code === 429) {
+                return new Response(JSON.stringify({ error: "Kuota harian penuh atau limit tercapai. Silakan coba lagi nanti." }), {
+                    status: 429,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
             return new Response(JSON.stringify({ error: data.error.message }), {
                 status: 500,
                 headers: { 'Content-Type': 'application/json' }
             });
         }
 
+        // Store in cache
+        CACHE.set(cacheKey, {
+            timestamp: Date.now(),
+            data: data
+        });
+
         return new Response(JSON.stringify(data), {
             status: 200,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json', 'X-Cache': 'MISS' }
         });
 
     } catch (error) {
