@@ -26,7 +26,8 @@ export async function POST(request) {
 
         const apiKey = process.env.GEMINI_API_KEY;
         // Upgraded to gemini-1.5-pro for better analysis quality (User is on Pro Plan)
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+        // Using v1 (stable) endpoint for production reliability
+        const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
 
         const payload = {
             contents: [{
