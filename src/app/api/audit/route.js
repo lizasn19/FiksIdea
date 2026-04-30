@@ -25,8 +25,8 @@ export async function POST(request) {
         }
 
         const apiKey = process.env.GEMINI_API_KEY;
-        // Using v1beta + gemini-1.5-flash (frequently more compatible in some regions/accounts)
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        // Using gemma-3-27b-it (higher rate limits and strong performance)
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemma-3-27b-it:generateContent?key=${apiKey}`;
 
         const payload = {
             contents: [{
