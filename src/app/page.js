@@ -24,8 +24,9 @@ Dalam bagian rekoendasi data pendukung diluar hpp kamu perlu memBerikan rekomend
 ATURAN KAMU DALAM MEREVIEW:
 1. Ringkasan Eksekutif (30%): Masalah harus jelas, ide harus jelas, deskripsi produk jelasin keunggulan produknya, jangan spill fitur produk terlalu detail cukup overview produk harus jelas & straight to the point ga basa-basi. harus mencantumkan referensi daftar sekunder jika mengammbil data dari luar, ada target pasar, harus ada penjelasan proses overview berjalannya bisnis dari raw materials sampai kalo bisa di bagian masalah landasan usaha da data primer dari wawancara atau ga data sekundernya, validasi Data Sekunder & Primer, Target Pasar (Behaviour/Psikografi), SDGs, dan 3P ( people, planet, profit ).  
 2. BMC (25%): Audit logika 9 blok harus singkat dan to the point. Value Proposition harus "Nendang". Channel harus spesifik & out-of-the-box. bagian key activities harus merepresentasikan operasional usaha di ringkasan eksekutif. Bagian key partner harus melampirkan partner usaha yang realistic untuk dikerjakan oleh anak SMA. Cek apakah ada miss informasi antara ringkasan eksekutif dengan BMC.
-3. SWOT (15%): Audit kejujuran Weakness & Threat. Strengths harus bisa mengatasi weakness Dan opportunities harus bisa mengatasi treats. 
+3. SWOT (15%): Audit kejujuran Weakness & Threat. Strengths harus bisa mengatasi weakness Dan opportunities harus bisa mengatasi treats.
 4. Finance/HPP (10%): Audit sinkronisasi harga jual vs Target Pasar & margin keuntungan. Jika HPP itemnya terlalu sedikit maka ga realistic. HPP harus mencakup biaya bahan baku, biaya tenaga kerja, biaya sewa dan lainnya jika ada. Kalau kategorinya game paling biaya server, biaya hosting, claud dan lainnya. 
+5. Inovasi & Orisinalitas (20%): Audit apakah ide ini benar-benar baru atau cuma modifikasi receh. Apakah ada nilai unik yang belum ada di kompetitor? Fokus pada "Uniqueness" dan "Competitive Advantage".
 
 dalam meberikan review/analisis kamu harus mengacu pada hal-hal ini (mandatory) :
 1. jangan minta siswa melakukan analisis yang terlalu mendala seperti BEP, analisis keuangan detail, cashflow, data survei detail, etc.
@@ -48,6 +49,7 @@ FORMAT OUTPUT WAJIB JSON:
     "bmcReview": { "score": 0, "feedback": "teks" },
     "swotReview": { "score": 0, "feedback": "teks" },
     "hppReview": { "score": 0, "feedback": "teks" },
+    "inovasiReview": { "score": 0, "feedback": "teks" },
     "overallScore": 0,
     "syncStatus": "Status",
     "syncDetails": "Detail",
@@ -252,7 +254,7 @@ export default function Home() {
     const copyFullReport = () => {
         const r = projectData.auditResult;
         if (!r) return;
-        const fullReport = `AUDIT FIKSI 2026: ${projectData.projectName}\nSKOR: ${r.overallScore}/100\n\n1. RE: ${r.reReview.feedback}\n\n2. BMC: ${r.bmcReview.feedback}\n\n3. SWOT: ${r.swotReview.feedback}\n\n4. HPP: ${r.hppReview.feedback}`;
+        const fullReport = `AUDIT FIKSI 2026: ${projectData.projectName}\nSKOR: ${r.overallScore}/100\n\n1. RE: ${r.reReview.feedback}\n\n2. BMC: ${r.bmcReview.feedback}\n\n3. SWOT: ${r.swotReview.feedback}\n\n4. HPP: ${r.hppReview.feedback}\n\n5. Inovasi: ${r.inovasiReview.feedback}`;
         navigator.clipboard.writeText(fullReport).then(() => {
             alert("Report lengkap disalin!");
         });
@@ -490,6 +492,7 @@ export default function Home() {
                                         {renderReviewBlock("BUSINESS MODEL CANVAS", r.bmcReview, 25)}
                                         {renderReviewBlock("ANALISIS SWOT", r.swotReview, 15)}
                                         {renderReviewBlock("FINANCE & HPP", r.hppReview, 10)}
+                                        {renderReviewBlock("INOVASI & ORISINALITAS", r.inovasiReview, 20)}
                                     </div>
                                     
                                     <div className="space-y-8">
