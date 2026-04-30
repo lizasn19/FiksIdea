@@ -450,20 +450,23 @@ export default function Home() {
                         const r = projectData.auditResult;
                         if (!r) return <div className="py-20 text-center animate-pulse text-gray-300 font-bold text-xl uppercase tracking-tighter italic">Menyusun Audit Objektif...</div>;
                         
-                        const renderReviewBlock = (title, review, max) => (
-                            <div className="bg-white p-10 rounded-[2.5rem] border border-gray-200 shadow-sm transition-all hover:shadow-xl group">
-                                <div className="flex justify-between items-center mb-5">
-                                    <h4 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] italic group-hover:text-blue-600 transition-colors">{title}</h4>
-                                    <div className="text-right">
-                                        <span className="text-3xl font-black text-blue-600">{review?.score || 0}</span><span className="text-xs text-gray-300 font-black">/{max}</span>
+                        const renderReviewBlock = (title, review, max) => {
+                            const weightedScore = parseFloat(((review?.score || 0) / 100) * max).toFixed(1);
+                            return (
+                                <div className="bg-white p-10 rounded-[2.5rem] border border-gray-200 shadow-sm transition-all hover:shadow-xl group">
+                                    <div className="flex justify-between items-center mb-5">
+                                        <h4 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] italic group-hover:text-blue-600 transition-colors">{title}</h4>
+                                        <div className="text-right">
+                                            <span className="text-3xl font-black text-blue-600">{weightedScore}</span><span className="text-xs text-gray-300 font-black">/{max}</span>
+                                        </div>
                                     </div>
+                                    <div className="w-full bg-gray-50 h-2 rounded-full mb-10 overflow-hidden shadow-inner border border-gray-100">
+                                        <div className={`h-full ${(review?.score || 0) < 50 ? 'bg-red-500' : 'bg-blue-600'} transition-all duration-1000`} style={{width: `${review?.score || 0}%`}}></div>
+                                    </div>
+                                    <div className="text-sm text-gray-600 leading-relaxed text-justify" dangerouslySetInnerHTML={{__html: (review?.feedback || '').replace(/\n/g, '<br>')}} />
                                 </div>
-                                <div className="w-full bg-gray-50 h-2 rounded-full mb-10 overflow-hidden shadow-inner border border-gray-100">
-                                    <div className={`h-full ${(review?.score || 0) < (max/2) ? 'bg-red-500' : 'bg-blue-600'} transition-all duration-1000`} style={{width: `${((review?.score || 0)/max)*100}%`}}></div>
-                                </div>
-                                <div className="text-sm text-gray-600 leading-relaxed text-justify" dangerouslySetInnerHTML={{__html: (review?.feedback || '').replace(/\n/g, '<br>')}} />
-                            </div>
-                        );
+                            );
+                        };
 
                         return (
                             <div className="space-y-10">
