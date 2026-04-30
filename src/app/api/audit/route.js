@@ -35,8 +35,7 @@ export async function POST(request) {
             }],
             generationConfig: {
                 temperature: 0.7,
-                maxOutputTokens: 4096, // Optimized for response length
-                responseMimeType: "application/json"
+                maxOutputTokens: 4096 // Optimized for response length
             }
         };
 
