@@ -26,7 +26,7 @@ export async function POST(request) {
 
         const apiKey = process.env.GEMINI_API_KEY;
         // Using gemma-3-27b-it (higher rate limits and strong performance)
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemma-3-27b-it:generateContent?key=${apiKey}`;
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemma-4-31b-it:generateContent?key=${apiKey}`;
 
         const payload = {
             contents: [{
@@ -34,7 +34,7 @@ export async function POST(request) {
                 parts: [{ text: "SYSTEM INSTRUCTION:\n" + systemPrompt + "\n\nUSER INPUT:\n" + userPrompt }]
             }],
             generationConfig: {
-                temperature: 0.7,
+                temperature: 0.9,
                 maxOutputTokens: 4096 // Optimized for response length
             }
         };
